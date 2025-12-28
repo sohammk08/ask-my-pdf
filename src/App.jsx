@@ -50,7 +50,7 @@ function App() {
     formData.append("question", userQuestion);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const API_URL = import.meta.env.VITE_API_URL;
       const res = await fetch(`${API_URL}/api/query`, {
         method: "POST",
         body: formData,

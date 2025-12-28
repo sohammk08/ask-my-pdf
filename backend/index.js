@@ -13,7 +13,7 @@ app.use(
     origin: [
       "http://localhost:5173", // Local Vite dev server
       // Vercel URL here after deployment
-      "https://mcp-file-insights-chat.vercel.app/",
+      "https://mcp-file-insights-chat.vercel.app",
     ],
   })
 );
@@ -63,7 +63,7 @@ app.post("/api/query", upload.single("pdf"), async (req, res) => {
     const groqRes = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: "llama-3.1-70b-versatile",
+        model: "llama-3.3-70b-versatile", // ← Updated here
         messages: [
           {
             role: "system",
