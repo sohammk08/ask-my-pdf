@@ -11,18 +11,18 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // Local Vite dev server
-      // Vercel URL here after deployment
+      "http://localhost:5173",
       "https://mcp-file-insights-chat.vercel.app",
     ],
   })
 );
 app.use(express.json());
 
-// Multer config: in-memory storage (ideal for Render free tier)
+// Multer config: in-memory storage
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype === "application/pdf") {
       cb(null, true);
@@ -44,7 +44,7 @@ app.post("/api/query", upload.single("pdf"), async (req, res) => {
     if (!question || question.trim().length === 0 || question.length > 250) {
       return res
         .status(400)
-        .json({ error: "Question must be 1–250 characters" });
+        .json({ error: "Question must be 1-250 characters" });
     }
 
     // Ensure a PDF was uploaded
@@ -63,7 +63,7 @@ app.post("/api/query", upload.single("pdf"), async (req, res) => {
     const groqRes = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: "llama-3.3-70b-versatile", // ← Updated here
+        model: "llama-3.3-70b-versatile",
         messages: [
           {
             role: "system",

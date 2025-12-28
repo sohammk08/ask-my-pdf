@@ -1,11 +1,14 @@
 import {
+  FaGithub,
   FaArrowUp,
   FaFilePdf,
+  FaLinkedinIn,
   FaInfoCircle,
   FaQuestionCircle,
 } from "react-icons/fa";
 import { FiPaperclip } from "react-icons/fi";
 import { GiPaperClip } from "react-icons/gi";
+import { FaXTwitter } from "react-icons/fa6";
 import { RiChatAiLine } from "react-icons/ri";
 import { useState, useRef, useEffect } from "react";
 
@@ -27,7 +30,7 @@ function App() {
         return;
       }
       setSelectedFile(file);
-      setMessages([]); // Optional: clear chat when new file uploaded
+      setMessages([]);
     }
   };
 
@@ -91,8 +94,45 @@ function App() {
           <RiChatAiLine className="mr-2 mt-1 text-2xl" />
           MCP File Insights Chat
         </h1>
-        <span className="bg-neutral-700 px-3 py-2 rounded-lg text-sm">
+        <span className="flex justify-center items-center bg-neutral-700 px-3 py-2 rounded-lg text-sm font-doto">
           Created by Sohamm Kulkarni
+          <div className="flex -space-x-1.5 ml-4">
+            {/* GitHub */}
+            <div
+              className="size-7 rounded-full bg-white ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
+              title="Open GitHub"
+              onClick={() =>
+                window.open("https://github.com/sohammk08", "_blank")
+              }
+            >
+              <FaGithub className="size-5.5 text-black" />
+            </div>
+
+            {/* X (Twitter) */}
+            <div
+              className="size-7 rounded-full bg-black ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
+              title="Open X"
+              onClick={() =>
+                window.open("https://x.com/skulkarni2517", "_blank")
+              }
+            >
+              <FaXTwitter className="size-5 p-0.5 text-white" />
+            </div>
+
+            {/* LinkedIn */}
+            <div
+              className="size-7 rounded-full bg-[#0A66C2] ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
+              title="Open LinkedIn"
+              onClick={() =>
+                window.open(
+                  "https://www.linkedin.com/in/sohamm-kulkarni-1b418b292/",
+                  "_blank"
+                )
+              }
+            >
+              <FaLinkedinIn className="size-5 p-0.5 text-white" />
+            </div>
+          </div>
         </span>
       </div>
 
