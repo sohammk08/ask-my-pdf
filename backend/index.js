@@ -7,6 +7,7 @@ import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 
 const app = express();
+app.set("trust proxy", true); // ← ADD THIS LINE
 const PORT = process.env.PORT || 5000;
 const SESSION_TTL = 24 * 60 * 60; // 24 hours in seconds
 
