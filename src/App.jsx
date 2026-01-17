@@ -291,7 +291,7 @@ function App() {
           queryLimitReached || uploadBlocked ? "pointer-events-none" : ""
         }`}
       >
-        <div className="bg-[#1e1e1e] rounded-3xl w-3xl mx-auto mb-4 flex flex-col">
+        <div className="bg-[#1e1e1e] rounded-3xl w-2/3 mx-auto mb-4 flex flex-col">
           {selectedFile && (
             <div className="flex mx-auto text-center text-sm bg-neutral-700 text-gray-200 py-1 px-2 mt-3 rounded-full">
               <FaFilePdf className="mr-1 my-auto text-red-500/80" />
