@@ -175,28 +175,29 @@ function App() {
         </div>
       )}
       {/* Header */}
-      <div className="flex justify-between mt-8 mx-6">
-        <h1 className="flex text-xl font-semibold">
-          <RiChatAiLine className="mr-2 mt-1 text-2xl" />
+      <div className="flex flex-col items-center gap-3 mt-8 mx-4 sm:flex-row sm:items-center sm:justify-between sm:mx-6">
+        <h1 className="flex text-lg sm:text-xl font-semibold sm:items-center">
+          <RiChatAiLine className="mr-2 text-2xl sm:mt-1" />
           AskMyPDF
         </h1>
         <span className="flex justify-center items-center bg-neutral-700 px-3 py-2 rounded-lg text-sm font-doto">
-          Created by Sohamm Kulkarni
-          <div className="flex -space-x-1.5 ml-4">
+          <span className="hidden sm:inline">Created by Sohamm Kulkarni</span>
+          <span className="sm:hidden">Built by Sohamm</span>
+          <div className="flex -space-x-1.5 ml-3 sm:ml-4">
             {/* GitHub */}
             <div
-              className="size-7 rounded-full bg-white ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
+              className="size-6 sm:size-7 rounded-full bg-white ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
               title="Open GitHub"
               onClick={() =>
                 window.open("https://github.com/sohammk08", "_blank")
               }
             >
-              <FaGithub className="size-5.5 text-black" />
+              <FaGithub className="size-5 sm:size-5.5 text-black" />
             </div>
 
             {/* X (Twitter) */}
             <div
-              className="size-7 rounded-full bg-black ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
+              className="size-6 sm:size-7 rounded-full bg-black ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
               title="Open X"
               onClick={() =>
                 window.open("https://x.com/skulkarni2517", "_blank")
@@ -207,7 +208,7 @@ function App() {
 
             {/* LinkedIn */}
             <div
-              className="size-7 rounded-full bg-[#0A66C2] ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
+              className="size-6 sm:size-7 rounded-full bg-[#0A66C2] ring-2 ring-neutral-700 cursor-pointer flex items-center justify-center"
               title="Open LinkedIn"
               onClick={() =>
                 window.open(
@@ -224,24 +225,24 @@ function App() {
 
       {/* Instructions Card — shown only before any file/chat */}
       {!hasChatStarted && (
-        <div className="max-w-2xl mx-auto mt-12 p-8 bg-linear-to-tr from-yellow-500 via-purple-500 to-indigo-500 rounded-2xl shadow-2xl">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <FaFilePdf className="text-5xl" />
-            <h1 className="text-4xl font-bold text-center">
+        <div className="w-11/12 max-w-2xl mx-auto mt-8 sm:mt-12 p-4 sm:p-8 bg-linear-to-tr from-yellow-500 via-purple-500 to-indigo-500 rounded-2xl shadow-2xl">
+          <div className="flex items-center justify-center gap-3 sm:gap-3 mb-4 sm:mb-6">
+            <FaFilePdf className="text-4xl sm:text-5xl shrink-0" />
+            <h1 className="text-2xl sm:text-4xl font-bold text-center">
               Upload Files, Get Answers
             </h1>
           </div>
-          <ul className="space-y-4 text-lg font-medium max-w-md mx-auto">
-            <li className="flex items-start gap-3">
-              <GiPaperClip className="w-6 h-6 mt-1 shrink-0" />
+          <ul className="space-y-3 sm:space-y-4 text-sm sm:text-lg font-medium max-w-md mx-auto">
+            <li className="flex items-start gap-2 sm:gap-3">
+              <GiPaperClip className="w-5 h-5 sm:w-6 sm:h-6 mt-0.5 sm:mt-1 shrink-0" />
               <span>Upload a PDF (max 10MB) using the clip icon</span>
             </li>
-            <li className="flex items-start gap-3">
-              <FaQuestionCircle className="w-6 h-6 mt-1 shrink-0" />
+            <li className="flex items-start gap-2 sm:gap-3">
+              <FaQuestionCircle className="w-5 h-5 sm:w-6 sm:h-6 mt-0.5 sm:mt-1 shrink-0" />
               <span>Ask questions about the document</span>
             </li>
-            <li className="flex items-start gap-3">
-              <FaInfoCircle className="w-6 h-6 mt-1 shrink-0" />
+            <li className="flex items-start gap-2 sm:gap-3">
+              <FaInfoCircle className="w-5 h-5 sm:w-6 sm:h-6 mt-0.5 sm:mt-1 shrink-0" />
               <span>Limited to 1 upload/day & 5 queries (250 chars max)</span>
             </li>
           </ul>
@@ -250,7 +251,7 @@ function App() {
 
       {/* Chat Messages Area */}
       {hasChatStarted && (
-        <div className="flex-1 overflow-y-auto px-4 mt-8 pb-32">
+        <div className="flex-1 overflow-y-auto px-2 sm:px-4 mt-8 pb-36 sm:pb-32">
           <div className="max-w-3xl mx-auto space-y-4">
             {messages.map((msg, i) => (
               <div
@@ -260,7 +261,7 @@ function App() {
                 }`}
               >
                 <div
-                  className={`max-w-xl px-5 py-3 rounded-2xl ${
+                  className={`max-w-[85%] sm:max-w-xl px-4 sm:px-5 py-3 rounded-2xl ${
                     msg.role === "user"
                       ? "bg-blue-600 text-white"
                       : "bg-neutral-800 text-gray-100"
@@ -291,11 +292,11 @@ function App() {
           queryLimitReached || uploadBlocked ? "pointer-events-none" : ""
         }`}
       >
-        <div className="bg-[#1e1e1e] rounded-3xl w-2/3 mx-auto mb-4 flex flex-col">
+        <div className="bg-[#1e1e1e] rounded-3xl w-11/12 sm:w-3/4 md:w-2/3 mx-auto mb-2 sm:mb-4 flex flex-col">
           {selectedFile && (
-            <div className="flex mx-auto text-center text-sm bg-neutral-700 text-gray-200 py-1 px-2 mt-3 rounded-full">
-              <FaFilePdf className="mr-1 my-auto text-red-500/80" />
-              Attached: {selectedFile.name}
+            <div className="flex mx-auto max-w-[90%] text-center text-sm bg-neutral-700 text-gray-200 py-1 px-2 mt-3 rounded-full">
+              <FaFilePdf className="mr-1 my-auto text-red-500/80 shrink-0" />
+              <span className="truncate">Attached: {selectedFile.name}</span>
             </div>
           )}
 
