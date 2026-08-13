@@ -1,140 +1,104 @@
-# MCP File Insights Chat
+# AskMyPDF
 
-## Overview
-
-MCP File Insights Chat is a full-stack web application that allows users to upload PDF documents and ask questions about their content. The app processes the PDF, extracts text, and uses AI to provide accurate answers based on the document. It features a clean, dark-themed interface inspired by modern chat apps, with rate limiting to prevent abuse.
-
-The project uses a React frontend for interactive UI and an Express backend for handling uploads, queries, and AI integration. It ensures secure, persistent limits using Redis and supports deployment on popular platforms.
+Chat with your PDF. Upload a document, ask questions about its contents, and get AI-generated answers grounded in what the document actually says — responding in your language.
 
 ## Features
 
-- **PDF Upload**: Users can upload PDFs up to 10MB via a simple clip icon.
-- **Q&A Chat**: Ask up to 5 questions per uploaded document; AI responds based on PDF content.
-- **Rate Limiting**: Per-IP: 1 upload and 5 queries per day; global: 50 uploads per day across all users.
-- **Persistent Sessions**: Upload once, ask follow-ups without resending PDF.
-- **UI Enhancements**: Auto-scroll chat, loading indicators, limit banners, disabled inputs on limits reached.
-- **Social Links**: Header with GitHub, X (Twitter), and LinkedIn icons for creator.
-- **Local Persistence**: Limit states saved in localStorage to survive refreshes.
+- **PDF Q&A**: Upload a PDF (max 10MB), ask questions, get answers extracted only from that document.
+- **Session-based**: Ask follow-up questions without re-uploading. Sessions persist for 30 minutes.
+- **Multilingual**: Answers are returned in the same natural spoken language as your question (the AI does not output code or binary).
+- **Rate limiting**: Per-IP: 1 upload and 5 queries per day; global: 50 uploads per day across all users.
+- **Groq AI**: Default model `openai/gpt-oss-20b`, configurable via `GROQ_MODEL_ID`.
+- **Dark chat UI**: Auto-scroll, loading indicators, limit banners, and controls disabled once limits are reached.
+- **Local persistence**: Limit states saved to `localStorage` so they survive page refreshes.
 
 ## Architecture
 
-The app follows a client-server model:
+```
+React (Vite) frontend  ──▶  Express backend  ──▶  Groq API (gpt-oss-20b)
+        │                          │
+        └──── fetch /api/upload, /api/query ──┘
+                                  │
+                             Upstash Redis
+                    (sessions 30min TTL + rate limits)
+```
 
-- **Frontend (React + Vite)**: Handles UI, file uploads, chat display, and user interactions. Uses TailwindCSS for styling, react-icons for icons, and fetch for API calls. States manage messages, limits, and session ID. Persistent storage via localStorage for rate limits.
-- **Backend (Express.js)**: Processes PDF uploads, extracts text using pdf-parse, stores in Redis with session ID. Handles queries by retrieving stored text and calling Groq API for AI responses. Uses Upstash Redis for rate limiting (per-IP and global). No disk storage — all in-memory/Redis for Render compatibility.
-- **Communication**: Frontend sends PDF to `/api/upload` (gets sessionId), then questions to `/api/query` with sessionId. Backend enforces limits before processing.
+- **Frontend** (`src/`): React + Vite + TailwindCSS. Handles PDF selection, file upload, chat display, and editing states. Reads the backend URL from `VITE_API_URL`.
+- **Backend** (`backend/index.js`): Express server. Extracts text from the PDF with `pdf-parse`, stores it in Upstash Redis keyed by a session ID, and streams questions to the Groq API. No files are written to disk.
 
-## Services Used
+### API endpoints
 
-- **Groq API**: For AI model (llama-3.3-70b-versatile) to generate answers from PDF text.
-- **Upstash Redis**: Persistent storage for rate limits, PDF text, and sessions (24-hour TTL).
-- **Render.com**: Hosts backend (auto-deploys from GitHub).
-- **Vercel**: Hosts frontend (auto-builds React app).
-- **UptimeRobot**: Optional to ping /health every 5 minutes, keeping Render instance awake.
+| Method | Path          | Description                                        |
+|--------|---------------|----------------------------------------------------|
+| GET    | `/health`     | Health check.                                      |
+| POST   | `/api/upload` | Multipart `pdf` field. Returns `sessionId`.        |
+| POST   | `/api/query`  | JSON `{ sessionId, question }`. Returns `answer`.  |
 
-## Setup Locally
+**Upload** extracts up to the first 30,000 characters of PDF text and stores it under a session (24-hour TTL — sessions are valid for 30 minutes). **Query** retrieves that text and asks Groq to answer only from it. Questions are limited to 250 characters.
+
+## Tech stack
+
+- **Frontend**: React 19, Vite 7, TailwindCSS 4, react-icons, framer-motion
+- **Backend**: Express, multer, pdf-parse, axios
+- **AI**: Groq API (`openai/gpt-oss-20b`, configurable)
+- **Storage / limits**: Upstash Redis + `@upstash/ratelimit`
+- **Deploy**: Render (backend), Vercel (frontend)
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js (v20+ recommended)
-- pnpm (package manager)
-- Git
-- Accounts: Groq (for API key), Upstash (for Redis — optional for local, required for production)
+- Node.js v20+
+- pnpm
+- Accounts: [Groq](https://console.groq.com) (API key), [Upstash](https://console.upstash.com) (Redis)
 
-Clone the repo:
+### Backend
 
 ```bash
-git clone https://github.com/sohammk08/mcp-file-insights-chat.git
-cd mcp-file-insights-chat
+cd backend
+pnpm install
+cp .env.example .env   # then fill in your keys
+pnpm start             # runs on http://localhost:5000
 ```
 
-### Backend Setup
+`.env` variables:
 
-1. Navigate to backend:
+```
+PORT=5000
+GROQ_API_KEY=gsk_your_groq_key_here
+GROQ_MODEL_ID=openai/gpt-oss-20b
+UPSTASH_REDIS_REST_URL=your_upstash_url_here
+UPSTASH_REDIS_REST_TOKEN=your_upstash_token_here
+```
 
-   ```bash
-   cd backend
-   ```
+`GROQ_MODEL_ID` is optional; it defaults to `openai/gpt-oss-20b`. Any other Groq model ID can be used here.
 
-2. Install dependencies:
+### Frontend
 
-   ```bash
-   pnpm install
-   ```
+```bash
+pnpm install       # from the project root
+cp .env.example .env   # set VITE_API_URL
+```
 
-3. Create `.env` file in backend folder (example):
+`.env` variable:
 
-   ```
-   PORT=5000
-   GROQ_API_KEY=gsk_your_groq_key_here
-   UPSTASH_REDIS_REST_URL=your_upstash_url_here
-   UPSTASH_REDIS_REST_TOKEN=your_upstash_token_here
-   ```
+```
+VITE_API_URL=http://localhost:5000
+```
 
-4. Run backend:
-   ```bash
-   node index.js
-   ```
-   Backend runs on http://localhost:5000. Test /health endpoint.
-
-### Frontend Setup
-
-1. Navigate to root (frontend):
-
-   ```bash
-   cd ..
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pnpm install
-   ```
-
-3. Create `.env` file in root (example):
-
-   ```
-   VITE_API_URL=http://localhost:5000
-   ```
-
-4. Run frontend:
-   ```bash
-   pnm run dev
-   ```
-   Frontend runs on http://localhost:5173. Connects to local backend.
-
-### Running the App
-
-- Open frontend in browser.
-- Upload PDF via clip icon (calls /api/upload).
-- Ask questions (calls /api/query with sessionId).
-- Limits enforced server-side; frontend disables UI on errors.
-
-For full production behavior locally, set Upstash vars (limits use in-memory fallback without them).
+Then run `pnpm dev` and open http://localhost:5173.
 
 ## Deployment
 
-- **Backend (Render)**: Connect GitHub repo, set root to backend, runtime Node, build `pnpm install`, start `pnpm start`. Add env vars (GROQ_API_KEY, Upstash).
-- **Frontend (Vercel)**: Connect GitHub, set VITE_API_URL to Render URL, build with pnpm.
-- **UptimeRobot**: Ping Render /health every 5 minutes to avoid sleep.
-- **Upstash**: Create free Redis DB, add vars to Render.
-
-## Usage
-
-- Upload PDF: Click clip, select file.
-- Ask questions: Type and send (Enter or button).
-- Limits: 1 upload + 5 queries per day per IP; 50 global uploads/day.
-- Refresh: Limits persist via localStorage (UI disabled if exceeded).
+- **Backend (Render)**: connect the repo, set root to `backend`, runtime Node, build `pnpm install`, start `pnpm start`. Add the env vars above.
+- **Frontend (Vercel)**: connect the repo, set `VITE_API_URL` to your Render URL, build with pnpm.
+- **UptimeRobot (optional)**: ping `https://<render-url>/health` every 5 minutes to keep the free-tier instance awake.
+- **Upstash**: create a free Redis DB and add its URL/token to Render.
 
 ## Limitations
 
-- Free tiers: Render sleeps after 15 minutes (use UptimeRobot); Upstash free has 10k commands/day.
-- PDF size: Max 10MB; text extraction limited to ~30k chars.
-- AI: Answers based only on PDF; no external knowledge.
-- No user accounts — IP-based limits.
-
-## License
-
-MIT License. Feel free to fork and improve.
-
-For questions, contact via LinkedIn or GitHub.
+- Rate limits are IP-based; there are no user accounts.
+- Free-tier Render sleeps after ~15 minutes of inactivity (use UptimeRobot).
+- Upstash free plan allows ~10k commands/day.
+- PDF text is capped at ~30k characters; files max 10MB.
+- Answers are based only on the PDF content — no external knowledge.

@@ -147,11 +147,12 @@ app.post("/api/query", async (req, res) => {
     const groqRes = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: "llama-3.3-70b-versatile",
+        model: process.env.GROQ_MODEL_ID || "openai/gpt-oss-20b",
         messages: [
           {
             role: "system",
-            content: "Answer based only on the provided PDF content.",
+            content:
+              "Answer based only on the provided PDF content. Respond in the same natural spoken language as the user's question (e.g. English, Spanish, Korean, Japanese); do not use code, binary, or non-human output. Be concise and avoid lengthy reasoning.",
           },
           {
             role: "user",
